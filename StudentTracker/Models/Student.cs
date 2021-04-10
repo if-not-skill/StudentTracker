@@ -7,7 +7,13 @@ namespace StudentTracker.Models
     public class Student
     {
         public int StudentID { get; set; }
+
+        [Required(ErrorMessage = "Введите фамилию")]
+        [StringLength(100, MinimumLength = 2)]
         public string LastName { get; set; }
+
+        [Required(ErrorMessage = "Введите имя")]
+        [StringLength(100, MinimumLength = 2)]
         public string FirstName { get; set; }
         public string MidName { get; set; }
         public int GenderID { get; set; } = 1;

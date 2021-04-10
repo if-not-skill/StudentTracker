@@ -49,11 +49,22 @@ namespace StudentTracker.Controllers
         // GET: Students/Create
         public IActionResult Create()
         {
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeID");
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationID");
-            ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderID");
-            ViewData["SpecialtyID"] = new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID");
+            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName");
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName");
+            ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderName");
+
+            int selectedIndex = 1;
+            SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", selectedIndex);
+            ViewData["Faculties"] = faculties;
+            SelectList specialties = new SelectList(_context.Specialties.Where(c => c.FacultyID == selectedIndex), "SpecialtyID", "SpecialtyName");
+            ViewData["SpecialtyID"] = specialties;
+
             return View();
+        }
+
+        public ActionResult GetItems(int id)
+        {
+            return PartialView(_context.Specialties.Where(s => s.FacultyID == id));
         }
 
         // POST: Students/Create

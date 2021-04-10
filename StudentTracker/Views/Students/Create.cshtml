@@ -4,76 +4,94 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Добавление студента</h1>
 
-<h4>Student</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
+                <label asp-for="LastName" class="control-label">Фамилия</label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
+                <label asp-for="FirstName" class="control-label">Имя</label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MidName" class="control-label"></label>
+                <label asp-for="MidName" class="control-label">Отчество</label>
                 <input asp-for="MidName" class="form-control" />
                 <span asp-validation-for="MidName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="GenderID" class="control-label"></label>
-                <select asp-for="GenderID" class ="form-control" asp-items="ViewBag.GenderID"></select>
+                <label asp-for="GenderID" class="control-label">Пол</label>
+                <select asp-for="GenderID" class="form-control" asp-items="ViewBag.GenderID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
+                <label asp-for="PhoneNumber" class="control-label">Номер телефона</label>
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EmailAddress" class="control-label"></label>
+                <label asp-for="EmailAddress" class="control-label">Email адрес</label>
                 <input asp-for="EmailAddress" class="form-control" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SpecialtyID" class="control-label"></label>
-                <select asp-for="SpecialtyID" class ="form-control" asp-items="ViewBag.SpecialtyID"></select>
+            <div>
+                <label class="control-label">Факультет</label>
+                @Html.DropDownList("Faculty", ViewData["Faculties"] as SelectList, new { id = "faculty", @class = "form-control" })
             </div>
             <div class="form-group">
-                <label asp-for="FormEducationID" class="control-label"></label>
-                <select asp-for="FormEducationID" class ="form-control" asp-items="ViewBag.FormEducationID"></select>
+                <label class="control-label">Специальность</label>
+                @Html.DropDownList("SpecialtyID", ViewData["SpecialtyID"] as SelectList, new { id = "SpecialtyID", @class = "form-control" })
             </div>
             <div class="form-group">
-                <label asp-for="AcademicDegreeID" class="control-label"></label>
-                <select asp-for="AcademicDegreeID" class ="form-control" asp-items="ViewBag.AcademicDegreeID"></select>
+                <label asp-for="FormEducationID" class="control-label">Форма обучения</label>
+                <select asp-for="FormEducationID" class="form-control" asp-items="ViewBag.FormEducationID"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AcademicDegreeID" class="control-label">Академическая степень</label>
+                <select asp-for="AcademicDegreeID" class="form-control" asp-items="ViewBag.AcademicDegreeID"></select>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsHasRedDiploma" /> @Html.DisplayNameFor(model => model.IsHasRedDiploma)
+                    <input class="form-check-input" asp-for="IsHasRedDiploma" /> Наличие красного диплома
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
+                <label asp-for="EndDate" class="control-label">Дата выпуска</label>
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(function() {
+            $('#faculty').change(function() {
+                var id = $(this).val();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetItems")/' + id,
+                    success: function(data) {
+                        $('#SpecialtyID').replaceWith(data);
+                    }
+                });
+            });
+        })
+    </script>
 }
