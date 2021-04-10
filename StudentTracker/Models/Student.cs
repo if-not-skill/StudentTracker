@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,11 +29,11 @@ namespace StudentTracker.Models
         public DateTime EndDate { get; set; }
 
         //navigation properties
-        public ICollection<StudentState> StudentStates { get; set; }
-        public Specialty Specialty { get; set; }
-        public AcademicDegree AcademicDegree { get; set; }
-        public FormEducation FormEducation { get; set; }
-        public Gender Gender { get; set; }
+        public ICollection<StudentState>? StudentStates { get; set; }
+        public Specialty? Specialty { get; set; }
+        public AcademicDegree? AcademicDegree { get; set; }
+        public FormEducation? FormEducation { get; set; }
+        public Gender? Gender { get; set; }
 
     }
 }

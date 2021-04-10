@@ -72,7 +72,7 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")] Student student)
+        public async Task<IActionResult> Create([Bind("StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,Faculty,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")] Student student)
         {
             if (ModelState.IsValid)
             {

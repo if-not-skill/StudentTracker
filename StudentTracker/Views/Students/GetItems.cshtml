@@ -2,6 +2,6 @@
 <select id="SpecialtyID" name="SpecialtyID" class="form-control">
      @foreach (var item in Model)
      {
-         <option value="item.SpecialtyID">@item.SpecialtyName</option>
+         <option value="@item.SpecialtyID">@item.SpecialtyName</option>
      }
 </select>
