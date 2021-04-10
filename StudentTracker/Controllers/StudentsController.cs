@@ -36,6 +36,7 @@ namespace StudentTracker.Controllers
                 .Include(s => s.AcademicDegree)
                 .Include(s => s.FormEducation)
                 .Include(s => s.Gender)
+                .Include(s => s.Specialty.Faculty)
                 .Include(s => s.Specialty)
                 .FirstOrDefaultAsync(m => m.StudentID == id);
             if (student == null)
