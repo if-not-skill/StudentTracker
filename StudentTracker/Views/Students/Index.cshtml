@@ -1,4 +1,5 @@
-﻿@model IEnumerable<StudentTracker.Models.Student>
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model IEnumerable<StudentTracker.Models.Student>
 
 @{
     ViewData["Title"] = "Index";
@@ -10,31 +11,49 @@
     <thead>
         <tr>
             <th>
-                Фамилия
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParam"]">
+                    Фамилия
+                </a>
             </th>
             <th>
-                Имя
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["FirstNameSortParam"]">
+                    Имя
+                </a>
             </th>
             <th>
-                Отчество
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["MidNameSortParam"]">
+                    Отчество
+                </a>
             </th>
             <th>
-                Пол
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["GenderSortParam"]">
+                    Пол
+                </a>
             </th>
             <th>
-                Год окончания
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParam"]">
+                    Год окончания
+                </a>
             </th>
             <th>
-                Факультет
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["FacultySortParam"]">
+                    Факультет
+                </a>
             </th>
             <th>
-                Специальность
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["SpecialtySortParam"]">
+                    Специальность
+                </a>
             </th>
             <th>
-                Академическая степень
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["AcademicDegreeSortParam"]">
+                    Академическая степень
+                </a>
             </th>
             <th>
-                Форма обучения
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["FormEducationSortParam"]">
+                    Форма обучения
+                </a>
             </th>
             <th></th>
         </tr>

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,9 +19,83 @@ namespace StudentTracker.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            var studentTrackerContext = _context.Students.Include(s => s.AcademicDegree).Include(s => s.FormEducation).Include(s => s.Gender).Include(s => s.Specialty).Include(s => s.Specialty.Faculty);
+            ViewData["LastNameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
+            ViewData["FirstNameSortParam"] = sortOrder == "first_name" ? "first_name_desc" : "first_name";
+            ViewData["MidNameSortParam"] = sortOrder == "mid_name" ? "mid_name_desc" : "mid_name";
+            ViewData["GenderSortParam"] = sortOrder == "gender" ? "gender_desc" : "gender";
+            ViewData["EndDateSortParam"] = sortOrder == "end_date" ? "end_date_desc" : "end_date";
+            ViewData["FacultySortParam"] = sortOrder == "faculty" ? "faculty_desc" : "faculty";
+            ViewData["SpecialtySortParam"] = sortOrder == "specialty" ? "specialty_desc" : "specialty";
+            ViewData["AcademicDegreeSortParam"] = sortOrder == "academic_degree" ? "academic_degree_desc" : "academic_degree";
+            ViewData["FormEducationSortParam"] = sortOrder == "form_education" ? "form_education_desc" : "form_education";
+
+            var studentTrackerContext = _context.Students
+                .Include(s => s.AcademicDegree)
+                .Include(s => s.FormEducation)
+                .Include(s => s.Gender)
+                .Include(s => s.Specialty)
+                .Include(s => s.Specialty.Faculty).OrderBy(s => s.LastName);
+
+            switch (sortOrder)
+            {
+                case "last_name_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.LastName);
+                    break;
+                case "end_date":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.EndDate);
+                    break;
+                case "end_date_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.EndDate);
+                    break;
+                case "first_name":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.FirstName);
+                    break;
+                case "first_name_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.FirstName);
+                    break;
+                case "mid_name":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.MidName);
+                    break;
+                case "mid_name_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.MidName);
+                    break;
+                case "gender":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.Gender);
+                    break;
+                case "gender_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.Gender);
+                    break;
+                case "faculty":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.Specialty.Faculty);
+                    break;
+                case "faculty_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.Specialty.Faculty);
+                    break;
+                case "specialty":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.Specialty);
+                    break;
+                case "specialty_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.Specialty);
+                    break;
+                case "academic_degree":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.AcademicDegree);
+                    break;
+                case "academic_degree_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.AcademicDegree);
+                    break;
+                case "form_education":
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.FormEducation);
+                    break;
+                case "form_education_desc":
+                    studentTrackerContext = studentTrackerContext.OrderByDescending(s => s.FormEducation);
+                    break;
+                default:
+                    studentTrackerContext = studentTrackerContext.OrderBy(s => s.LastName);
+                    break;
+            }
+            
             return View(await studentTrackerContext.ToListAsync());
         }
 
