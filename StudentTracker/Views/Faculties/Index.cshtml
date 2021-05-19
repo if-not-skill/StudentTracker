@@ -6,10 +6,10 @@
 
 <style>
     .accordion {
-        background-color: #eee;
+        background-color: #fff;
         color: #444;
         cursor: pointer;
-        padding: 18px;
+        padding: 20px;
         width: 100%;
         border: none;
         text-align: left;
@@ -18,9 +18,14 @@
         transition: 0.4s;
     }
 
-    .active, .accordion:hover {
-        background-color: #ccc; 
+    button:focus {
+        outline: none;
     }
+
+    .active, .accordion:hover {
+        background-color: #fff;
+        outline: none;
+    }    
 
     .panel {
         padding: 0 18px;
@@ -30,40 +35,66 @@
         overflow: hidden;
         transition: max-height 0.2s ease-out;
     }
+    .accordion:after {
+        content: '\02795'; /* Unicode character for "plus" sign (+) */
+        font-size: 13px;
+        color: #777;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .active:after {
+        content: "\2796"; /* Unicode character for "minus" sign (-) */
+    }   
 </style>
 
 <p align="right">
     <a asp-action="Create">Добавить факультет</a>
 </p>
 @foreach (var faculty in Model) {
-        <tr>
-            <button class="accordion">
-                @Html.DisplayFor(modelItem => faculty.FacultyName) 
-                <div align="right">
+<div style="padding: 10px">
+    <button class="accordion">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+                    <img src="@("~/image/" + faculty.ImageName)" asp-append-version="true" width="79px" height="79px" />
+                </div>
+                <div class="col-lg-11 col-md-10 col-sm-10 col-xs-9 col-xs-offset-1 col-sm-offset-0">
+                    <p class="h5">@Html.DisplayFor(modelItem => faculty.FacultyName)</p>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-auto"/>
+                <div class="col-md-auto text-right">
                     <a asp-action="Edit" asp-route-id="@faculty.FacultyID">Изменить</a> |
-                    <a asp-controller="Specialties" asp-action="Create" asp-route-id="@faculty.FacultyID">Добавить специальность</a> | 
+                    <a asp-controller="Specialties" asp-action="Create" asp-route-id="@faculty.FacultyID">Добавить специальность</a> |
                     <a asp-action="Delete" asp-route-id="@faculty.FacultyID">Удалить</a>
                 </div>
-            </button>
-            <div class="panel">
-                <table class="table">
-                    <thead>
-                    </thead>
-                    <tbody>
-                        @foreach(var specialty in faculty.Specialties)
-                        {
-                            <tr>
-                                <td>@specialty.SpecialtyName</td>
-                                <td align="right">
-                                    <a asp-area="" asp-controller="Specialties" asp-action="Edit" asp-route-id="@specialty.SpecialtyID">Изменить</a> | 
-                                    <a asp-area="" asp-controller="Specialties" asp-action="Delete" asp-route-id="@specialty.SpecialtyID">Удалить</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
             </div>
-        </tr>
+        </div>
+                
+    </button>
+    <div class="panel">
+        <table class="table">
+            <thead>
+            </thead>
+            <tbody>
+                @foreach (var specialty in faculty.Specialties)
+                {
+                    <tr>
+                        <td>@specialty.SpecialtyName</td>
+                        <td align="right">
+                            <a asp-area="" asp-controller="Specialties" asp-action="Edit" asp-route-id="@specialty.SpecialtyID">Изменить</a> |
+                            <a asp-area="" asp-controller="Specialties" asp-action="Delete" asp-route-id="@specialty.SpecialtyID">Удалить</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 }
 
 

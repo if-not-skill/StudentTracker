@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +15,12 @@ namespace StudentTracker.Controllers
     public class FacultiesController : Controller
     {
         private readonly StudentTrackerContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public FacultiesController(StudentTrackerContext context)
+        public FacultiesController(StudentTrackerContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Faculties
@@ -56,10 +60,22 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FacultyID,FacultyName,FacultyShortName")] Faculty faculty)
+        public async Task<IActionResult> Create([Bind("FacultyID,FacultyName,FacultyShortName,ImageFile")] Faculty faculty)
         {
             if (ModelState.IsValid)
             {
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(faculty.ImageFile.FileName);
+                string extension = Path.GetExtension(faculty.ImageFile.FileName);
+
+                faculty.ImageName = fileName + extension;
+                string path = Path.Combine(wwwRootPath + "/image/", fileName + extension);
+
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await faculty.ImageFile.CopyToAsync(fileStream);
+                }
+
                 _context.Add(faculty);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -88,7 +104,7 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FacultyID,FacultyName,FacultyShortName")] Faculty faculty)
+        public async Task<IActionResult> Edit(int id, [Bind("FacultyID,FacultyName,FacultyShortName,ImageName,ImageFile")] Faculty faculty)
         {
             if (id != faculty.FacultyID)
             {
@@ -99,6 +115,25 @@ namespace StudentTracker.Controllers
             {
                 try
                 {
+                    var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", faculty.ImageName ?? "");
+
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(faculty.ImageFile.FileName);
+                    string extension = Path.GetExtension(faculty.ImageFile.FileName);
+
+                    faculty.ImageName = fileName + extension;
+                    string path = Path.Combine(wwwRootPath + "/image/", fileName + extension);
+
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await faculty.ImageFile.CopyToAsync(fileStream);
+                    }
+
                     _context.Update(faculty);
                     await _context.SaveChangesAsync();
                 }
@@ -142,6 +177,13 @@ namespace StudentTracker.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var faculty = await _context.Faculties.FindAsync(id);
+
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", faculty.ImageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
             _context.Faculties.Remove(faculty);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
