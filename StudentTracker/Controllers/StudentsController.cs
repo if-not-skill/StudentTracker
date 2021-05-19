@@ -19,8 +19,9 @@ namespace StudentTracker.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["LastNameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
             ViewData["FirstNameSortParam"] = sortOrder == "first_name" ? "first_name_desc" : "first_name";
             ViewData["MidNameSortParam"] = sortOrder == "mid_name" ? "mid_name_desc" : "mid_name";
@@ -30,8 +31,16 @@ namespace StudentTracker.Controllers
             ViewData["SpecialtySortParam"] = sortOrder == "specialty" ? "specialty_desc" : "specialty";
             ViewData["AcademicDegreeSortParam"] = sortOrder == "academic_degree" ? "academic_degree_desc" : "academic_degree";
             ViewData["FormEducationSortParam"] = sortOrder == "form_education" ? "form_education_desc" : "form_education";
+            ViewData["CurrentFilter"] = searchString ?? currentFilter;
 
-            ViewData["CurrentFilter"] = searchString;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
             var students = _context.Students
                 .Include(s => s.AcademicDegree)
@@ -111,8 +120,10 @@ namespace StudentTracker.Controllers
                     students = students.OrderBy(s => s.LastName);
                     break;
             }
+
+            int pageSize = 3;
             
-            return View(await students.ToListAsync());
+            return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Students/Details/5

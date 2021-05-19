@@ -1,5 +1,5 @@
 ﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
-@model IEnumerable<StudentTracker.Models.Student>
+@model PaginatedList<StudentTracker.Models.Student>
 
 @{
     ViewData["Title"] = "Index";
@@ -19,57 +19,57 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParam"]">
-                    Фамилия
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["FirstNameSortParam"]">
-                    Имя
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["MidNameSortParam"]">
-                    Отчество
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["GenderSortParam"]">
-                    Пол
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParam"]">
-                    Год окончания
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["FacultySortParam"]">
-                    Факультет
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["SpecialtySortParam"]">
-                    Специальность
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["AcademicDegreeSortParam"]">
-                    Академическая степень
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["FormEducationSortParam"]">
-                    Форма обучения
-                </a>
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Фамилия
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["FirstNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Имя
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["MidNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Отчество
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["GenderSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Пол
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Год окончания
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["FacultySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Факультет
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["SpecialtySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Специальность
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["AcademicDegreeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Академическая степень
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["FormEducationSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                Форма обучения
+            </a>
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.LastName)
@@ -99,9 +99,31 @@
                 @Html.DisplayFor(modelItem => item.FormEducation.FormEducationName)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.StudentID">Изменить</a> | <a asp-action="Details" asp-route-id="@item.StudentID">Детали</a> | <a asp-action="Delete" asp-route-id="@item.StudentID">Удалить</a>
+                <a asp-action="Edit" asp-route-id="@item.StudentID">Изменить</a> | 
+                <a asp-action="Details" asp-route-id="@item.StudentID">Детали</a> | 
+                <a asp-action="Delete" asp-route-id="@item.StudentID">Удалить</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
