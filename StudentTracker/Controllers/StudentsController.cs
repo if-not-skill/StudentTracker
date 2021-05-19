@@ -173,7 +173,7 @@ namespace StudentTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeID", student.AcademicDegreeID);
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationID", student.FormEducationID);
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName", student.FormEducationID);
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderID", student.GenderID);
             ViewData["SpecialtyID"] = new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
             return View(student);
@@ -187,15 +187,25 @@ namespace StudentTracker.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Students.FindAsync(id);
+            var student = await _context.Students
+                .Include(s => s.Specialty)
+                .Include(s => s.Specialty.Faculty)
+                .FirstOrDefaultAsync(s => s.StudentID == id.Value);
             if (student == null)
             {
                 return NotFound();
             }
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeID", student.AcademicDegreeID);
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationID", student.FormEducationID);
-            ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderID", student.GenderID);
-            ViewData["SpecialtyID"] = new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
+            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName", student.AcademicDegreeID);
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName", student.FormEducationID);
+            ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderName", student.GenderID);
+
+            SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", student.Specialty.FacultyID);
+            ViewData["Faculties"] = faculties;
+
+            SelectList specialties = new SelectList(_context.Specialties.Where(s => s.FacultyID == student.Specialty.FacultyID), "SpecialtyID", "SpecialtyName", student.SpecialtyID);
+            ViewData["Specialties"] = specialties;
+
+            
             return View(student);
         }
 
