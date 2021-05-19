@@ -1,0 +1,38 @@
+﻿@model StudentTracker.Models.Specialty
+
+@{
+    ViewData["Title"] = "Изменение специальности";
+}
+
+<h1>Edit</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SpecialtyID" />
+            <div class="form-group">
+                <label asp-for="SpecialtyName" class="control-label">Название специальности</label>
+                <input asp-for="SpecialtyName" class="form-control" />
+                <span asp-validation-for="SpecialtyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FacultyID" class="control-label">Факультет</label>
+                <select asp-for="FacultyID" class="form-control" asp-items="ViewBag.FacultyID"></select>
+                <span asp-validation-for="FacultyID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Faculties" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
