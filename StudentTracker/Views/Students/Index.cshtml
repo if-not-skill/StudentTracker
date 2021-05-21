@@ -3,126 +3,164 @@
 @{
     ViewData["Title"] = "Index";
 }
-<form asp-action="Index" method="get">
-    <div class="form-actions no-color">
-        <p>
-            <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]"/>
-            <input type="submit" value="Поиск" class="btn btn-default"/>
-            <a asp-action="Index">Вернуться к полному списку</a>
-        </p>
-    </div>
-</form>
-
-<p>
-    <a asp-action="Create">Добавить студента</a>
-</p>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Фамилия
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["FirstNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Имя
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["MidNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Отчество
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["GenderSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Пол
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Год окончания
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["FacultySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Факультет
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["SpecialtySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Специальность
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["AcademicDegreeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Академическая степень
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["FormEducationSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                Форма обучения
-            </a>
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MidName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender.GenderName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate.Year)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Specialty.Faculty.FacultyShortName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Specialty.SpecialtyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AcademicDegree.AcademicDegreeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FormEducation.FormEducationName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.StudentID">Изменить</a> | 
-                <a asp-action="Details" asp-route-id="@item.StudentID">Детали</a> | 
-                <a asp-action="Delete" asp-route-id="@item.StudentID">Удалить</a>
-            </td>
-        </tr>
+<style>
+    .btn-table {
+        border-radius: 0;
     }
-    </tbody>
-</table>
+    #searchinput {
+        width: 200px;
+    }
+    #searchclear {
+        position: absolute;
+        right: 5px;
+        top: 0;
+        bottom: 0;
+        height: 14px;
+        margin: auto;
+        font-size: 14px;
+        cursor: pointer;
+        color: #ccc;
+    }
+</style>
 
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage? "disabled" : "";
-}
+<div style="width: fit-content;">
+    <div style="width: 100%;">
+        <div style="float: left; display: inline-block;">
+            <form class="form-inline" asp-action="Index" method="get">
+                <div class="form-actions no-color">
+                    <div class="btn-group">
+                        <input id="searchinput" class="form-control" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                        @if (ViewData["CurrentFilter"] != null)
+                        {
+                            <a asp-action="Index" id="searchclear" class="fa fa-times-circle" aria-hidden="true"></a>
+                        }
+                    </div>
+                    <input class="btn btn-outline-primary" type="submit" value="Поиск" class="btn btn-default" />
+                </div>
+            </form>
+        </div>
+        <div style="float: right; display: inline-block;">
+            <p>
+                <a class="btn btn-outline-primary" asp-action="Create">Добавить студента</a>
+            </p>
+        </div>
+    </div>
 
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
+    <table class="table" style="background-color: white; width: 100%; height: 100%">
+        <thead>
+            <tr>
+                <th valign="middle" style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if (ViewData["CurrentSort"] == null || ViewData["CurrentSort"] as string == "last_name_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        <p style="vertical-align: central;">Фамилия</p>
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "first_name" || ViewData["CurrentSort"] as string == "first_name_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["FirstNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Имя
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "mid_name" || ViewData["CurrentSort"] as string == "mid_name_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["MidNameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Отчество
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "gender" || ViewData["CurrentSort"] as string == "gender_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["GenderSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Пол
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "end_date" || ViewData["CurrentSort"] as string == "end_date_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Год окончания
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "faculty" || ViewData["CurrentSort"] as string == "faculty_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["FacultySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Факультет
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "specialty" || ViewData["CurrentSort"] as string == "specialty_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["SpecialtySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Специальность
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "academic_degree" || ViewData["CurrentSort"] as string == "academic_degree_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["AcademicDegreeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Академическая степень
+                    </a>
+                </th>
+                <th style="padding: 0; width: 100%; height: 100%;">
+                    <a style="margin: 0; height: 100%; width: 100%;" class="btn-table @{if(ViewData["CurrentSort"] as string == "form_education" || ViewData["CurrentSort"] as string == "form_education_desc") {<text>btn btn-primary</text>} else {<text>btn btn-outline-primary</text>}}" asp-action="Index" asp-route-sortOrder="@ViewData["FormEducationSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        Форма обучения
+                    </a>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MidName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Gender.GenderName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate.Year)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Specialty.Faculty.FacultyShortName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Specialty.SpecialtyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AcademicDegree.AcademicDegreeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FormEducation.FormEducationName)
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.StudentID"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.StudentID"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                            <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.StudentID"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <div style="text-align: center">
+        <div class="btn-group">
+            <a asp-action="Index"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(Model.PageIndex - 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-outline-secondary @prevDisabled">
+                Назад
+            </a>
+            <a asp-action="Index"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(Model.PageIndex + 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-outline-secondary @nextDisabled">
+                Далее
+            </a>
+        </div>
+    </div>
+</div>
