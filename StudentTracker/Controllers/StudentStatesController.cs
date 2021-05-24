@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using StudentTracker.Data;
 using StudentTracker.Models;
@@ -45,10 +46,16 @@ namespace StudentTracker.Controllers
         }
 
         // GET: StudentStates/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
-            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "EmploymentStatusID");
-            ViewData["StudentID"] = new SelectList(_context.Students, "StudentID", "EmailAddress");
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["StudentID"] = id;
+            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "Name");
+            ViewData["Student"] = _context.Students.Find(id);
             return View();
         }
 
@@ -63,11 +70,11 @@ namespace StudentTracker.Controllers
             {
                 _context.Add(studentState);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Students", new { id = studentState.StudentID });
             }
             ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "EmploymentStatusID", studentState.EmploymentStatusID);
             ViewData["StudentID"] = new SelectList(_context.Students, "StudentID", "EmailAddress", studentState.StudentID);
-            return View(studentState);
+            return View();
         }
 
         // GET: StudentStates/Edit/5

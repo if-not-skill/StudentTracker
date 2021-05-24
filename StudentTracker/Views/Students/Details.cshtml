@@ -4,90 +4,181 @@
     ViewData["Title"] = "Details";
 }
 
+
+
+<style>
+    .accordion {
+        background-color: #fff;
+        color: #444;
+        cursor: pointer;
+        padding: 20px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        transition: 0.4s;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    .active, .accordion:hover {
+        background-color: #fff;
+        outline: none;
+    }
+
+    .panel {
+        padding: 0 18px;
+        /* display: none; */
+        background-color: white;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+    }
+
+    .accordion:after {
+        content: '\02795'; /* Unicode character for "plus" sign (+) */
+        font-size: 13px;
+        color: #777;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .active:after {
+        content: "\2796"; /* Unicode character for "minus" sign (-) */
+    }
+</style>
+
+
 <div style="background-color: white; padding: 20px;">
 
-<h1>Детали</h1>
+    <h1>Детали</h1>
 
-<div>
-    @* <h4>Студент#@Html.DisplayFor(model => model.StudentID)</h4> *@
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Фамилия
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            Имя
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class="col-sm-2">
-            Отчество
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MidName)
-        </dd>
-        <dt class="col-sm-2">
-            Пол
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Gender.GenderName)
-        </dd>
-        <dt class="col-sm-2">
-            Номер телефона
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class="col-sm-2">
-            Email адрес
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmailAddress)
-        </dd>
-        <dt class="col-sm-2">
-            Факультет
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Specialty.Faculty.FacultyName)
-        </dd>
-        <dt class="col-sm-2">
-            Специальность
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Specialty.SpecialtyName)
-        </dd>
-        <dt class="col-sm-2">
-            Академическая степень
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AcademicDegree.AcademicDegreeName)
-        </dd>
-        <dt class="col-sm-2">
-            Форма образования
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FormEducation.FormEducationName)
-        </dd>
-        <dt class="col-sm-2">
-            Наличие красного диплома
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IsHasRedDiploma)
-        </dd>
-        <dt class="col-sm-2">
-            Дата выпуска
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-    </dl>
+    <div style="padding-bottom: 20px; ">
+        @* <h4>Студент#@Html.DisplayFor(model => model.StudentID)</h4> *@
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Фамилия
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LastName)
+            </dd>
+            <dt class="col-sm-2">
+                Имя
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FirstName)
+            </dd>
+            <dt class="col-sm-2">
+                Отчество
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MidName)
+            </dd>
+            <dt class="col-sm-2">
+                Пол
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Gender.GenderName)
+            </dd>
+            <dt class="col-sm-2">
+                Номер телефона
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PhoneNumber)
+            </dd>
+            <dt class="col-sm-2">
+                Email адрес
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EmailAddress)
+            </dd>
+            <dt class="col-sm-2">
+                Факультет
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Specialty.Faculty.FacultyName)
+            </dd>
+            <dt class="col-sm-2">
+                Специальность
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Specialty.SpecialtyName)
+            </dd>
+            <dt class="col-sm-2">
+                Академическая степень
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.AcademicDegree.AcademicDegreeName)
+            </dd>
+            <dt class="col-sm-2">
+                Форма образования
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FormEducation.FormEducationName)
+            </dd>
+            <dt class="col-sm-2">
+                Наличие красного диплома
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.IsHasRedDiploma)
+            </dd>
+            <dt class="col-sm-2">
+                Дата выпуска
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EndDate)
+            </dd>
+        </dl>
+        
+        <div align="right" style="padding-bottom: 10px;">
+            <a class="btn btn-outline-primary" asp-controller="StudentStates" asp-action="Create" asp-route-id="@Model.StudentID">Добавить</a>
+        </div>
+        <div style="outline: 1px solid;">
+            <button class="accordion">
+                <div class="container">
+                    <p>Тут</p>
+                </div>
+            </button>
+            <div class="panel">
+                <table class="table">
+                    <tbody>
+                        @foreach (var studentState in Model.StudentStates)
+                        {
+                            <tr>
+                                <td>@studentState.StatusDate</td>
+                                <td>@studentState.EmploymentStatus</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-outline-primary" asp-action="Index">Назад</a>
+        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.StudentID">Изменить</a>
+    </div>
 </div>
-<div class="btn-group">
-    <a class="btn btn-outline-primary" asp-action="Index">Назад</a>
-    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.StudentID">Изменить</a>
-</div>
-</div>
+
+
+<script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        });
+    }
+</script>

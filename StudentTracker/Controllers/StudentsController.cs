@@ -140,6 +140,7 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Gender)
                 .Include(s => s.Specialty.Faculty)
                 .Include(s => s.Specialty)
+                .Include(s => s.StudentStates)
                 .FirstOrDefaultAsync(m => m.StudentID == id);
             if (student == null)
             {
