@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -140,12 +141,17 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Gender)
                 .Include(s => s.Specialty.Faculty)
                 .Include(s => s.Specialty)
-                .Include(s => s.StudentStates)
                 .FirstOrDefaultAsync(m => m.StudentID == id);
             if (student == null)
             {
                 return NotFound();
             }
+
+            var studentStates = new List<StudentState>(_context.StudentStates
+                .Where(s => s.StudentID == student.StudentID)
+                .Include(s => s.EmploymentStatus));
+
+            ViewData["StudentStates"] = studentStates;
 
             return View(student);
         }

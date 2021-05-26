@@ -1,4 +1,5 @@
-﻿@model StudentTracker.Models.Student
+﻿@using Microsoft.EntityFrameworkCore
+@model StudentTracker.Models.Student
 
 @{
     ViewData["Title"] = "Details";
@@ -133,30 +134,55 @@
                 @Html.DisplayFor(model => model.EndDate)
             </dd>
         </dl>
-        
+
         <div align="right" style="padding-bottom: 10px;">
-            <a class="btn btn-outline-primary" asp-controller="StudentStates" asp-action="Create" asp-route-id="@Model.StudentID">Добавить</a>
+            <a class="btn btn-outline-primary" asp-controller="StudentStates" asp-action="Create" asp-route-id="@Model.StudentID">Добавить информацию о трудоустройстве</a>
         </div>
-        <div style="outline: 1px solid;">
-            <button class="accordion">
-                <div class="container">
-                    <p>Тут</p>
+
+        @{
+            var studentStates = ViewData["StudentStates"] as List<StudentState>;
+
+            @if (studentStates.Count > 0)
+            {
+                <div style="outline: 1px solid;">
+                    <button class="accordion">
+                        <div class="container">
+                            <p>Информация о трудоустройстве</p>
+                        </div>
+                    </button>
+                    <div class="panel">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Состояние трудоустройства</th>
+                                    <th>Страна</th>
+                                    <th>Город</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var studentState in studentStates)
+                            {
+                                <tr>
+                                    <td>@studentState.StatusDate.ToShortDateString()</td>
+                                    <td>@studentState.EmploymentStatus.Name</td>
+                                    <td>@studentState.CountryName</td>
+                                    <td>@studentState.CityName</td>
+                                    <td style="text-align: right;">
+                                        <div class="btn-group">
+                                            <a class="btn btn-outline-success" asp-controller="StudentStates" asp-action="Edit" asp-route-id="@studentState.StudentStateID"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            <a class="btn btn-outline-danger" asp-controller="StudentStates" asp-action="Delete" asp-route-id="@studentState.StudentStateID"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </button>
-            <div class="panel">
-                <table class="table">
-                    <tbody>
-                        @foreach (var studentState in Model.StudentStates)
-                        {
-                            <tr>
-                                <td>@studentState.StatusDate</td>
-                                <td>@studentState.EmploymentStatus</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            }
+        }
 
     </div>
     <div class="btn-group">
