@@ -149,7 +149,8 @@ namespace StudentTracker.Controllers
 
             var studentStates = new List<StudentState>(_context.StudentStates
                 .Where(s => s.StudentID == student.StudentID)
-                .Include(s => s.EmploymentStatus));
+                .Include(s => s.EmploymentStatus)
+                .OrderBy(s => s.StatusDate));
 
             ViewData["StudentStates"] = studentStates;
 
