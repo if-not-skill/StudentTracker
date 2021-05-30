@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -40,9 +39,9 @@ namespace StudentTracker.Controllers
                 pieChartMain.datasets[0].backgroundColor.Add("#3498db");
                 pieChartMain.datasets[0].backgroundColor.Add("#95a5a6");
 
-                List<int> EmploymentValues = GetEmploymentValues();
+                List<int> employmentValues = GetEmploymentValues();
 
-                foreach (var employmentValue in EmploymentValues)
+                foreach (var employmentValue in employmentValues)
                 {
                     pieChartMain.datasets[0].data.Add(employmentValue);
                 }
@@ -55,14 +54,14 @@ namespace StudentTracker.Controllers
 
         private List<int> GetEmploymentValues()
         {
-            List<int> EmploymentValues = new List<int>();
+            List<int> employmentValues = new List<int>();
 
             var undefinedStudent = 0;
             var employmentStatuses = (from temp in _context.EmploymentStatuses select temp).ToList();
 
-            foreach (var employmentStatus in employmentStatuses)
+            foreach (var unused in employmentStatuses)
             {
-                EmploymentValues.Add(0);
+                employmentValues.Add(0);
             }
 
             var students = _context.Students.Include(s => s.StudentStates);
@@ -80,14 +79,14 @@ namespace StudentTracker.Controllers
                 {
                     if (lastStudentState.EmploymentStatus.Name == employmentStatuses[index].Name)
                     {
-                        EmploymentValues[index]++;
+                        employmentValues[index]++;
                     }
                 }
             }
 
-            EmploymentValues.Add(undefinedStudent);
+            employmentValues.Add(undefinedStudent);
 
-            return EmploymentValues;
+            return employmentValues;
         }
 
         // GET: Reports/Details/5

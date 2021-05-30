@@ -1,14 +1,15 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using StudentTracker.Data;
 using StudentTracker.Models;
 
 namespace StudentTracker.Controllers
 {
+    [Authorize(Roles = "admin, worker")]
     public class StudentStatesController : Controller
     {
         private readonly StudentTrackerContext _context;

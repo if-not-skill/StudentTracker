@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using StudentTracker.Models;
 
 namespace StudentTracker.Controllers
 {
+    [Authorize(Roles="admin, worker")]
     public class StudentsController : Controller
     {
         private readonly StudentTrackerContext _context;
@@ -210,16 +212,21 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Specialty)
                 .Include(s => s.Specialty.Faculty)
                 .FirstOrDefaultAsync(s => s.StudentID == id.Value);
+            
             if (student == null)
             {
                 return NotFound();
             }
+            
             ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName", student.AcademicDegreeID);
             ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName", student.FormEducationID);
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderName", student.GenderID);
 
-            SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", student.Specialty.FacultyID);
-            ViewData["Faculties"] = faculties;
+            if (student.Specialty != null)
+            {
+                SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", student.Specialty.FacultyID);
+                ViewData["Faculties"] = faculties;
+            }
 
             SelectList specialties = new SelectList(_context.Specialties.Where(s => s.FacultyID == student.Specialty.FacultyID), "SpecialtyID", "SpecialtyName", student.SpecialtyID);
             ViewData["Specialties"] = specialties;

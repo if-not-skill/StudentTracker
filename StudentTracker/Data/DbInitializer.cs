@@ -78,13 +78,13 @@ namespace StudentTracker.Data
             //Faculties
             var faculties = new Faculty[]
             {
-                new Faculty { FacultyName="Факультет Менеджмента и предпринимательства", FacultyShortName="МиП"},
-                new Faculty { FacultyName="Факультет Торгового дела", FacultyShortName="ТД"},
-                new Faculty { FacultyName="Факультет Компьютерных технологий и информационной безопасности", FacultyShortName="КТиИБ"},
-                new Faculty { FacultyName="Учетно-экономический факультет", FacultyShortName="УЭФ"},
-                new Faculty { FacultyName="Факультет Экономики и финансов", FacultyShortName="ЭиФ"},
-                new Faculty { FacultyName="Юридический факультет", FacultyShortName="ЮФ"},
-                new Faculty { FacultyName="Факультет Лингвистики и журналистики", FacultyShortName="ЛиЖ"}
+                new Faculty { FacultyName="Факультет Менеджмента и предпринимательства", FacultyShortName="МиП", ImageName = "mip.png"},
+                new Faculty { FacultyName="Факультет Компьютерных технологий и информационной безопасности", FacultyShortName="КТиИБ", ImageName = "ktib.png"},
+                new Faculty { FacultyName="Факультет Торгового дела", FacultyShortName="ТД", ImageName = "td.png"},
+                new Faculty { FacultyName="Учетно-экономический факультет", FacultyShortName="УЭФ", ImageName = "uef.png"},
+                new Faculty { FacultyName="Факультет Экономики и финансов", FacultyShortName="ЭиФ", ImageName = "eif.png"},
+                new Faculty { FacultyName="Юридический факультет", FacultyShortName="ЮФ", ImageName = "urf.png"},
+                new Faculty { FacultyName="Факультет Лингвистики и журналистики", FacultyShortName="ЛиЖ", ImageName = "lig.png"}
             };
 
             foreach(var faculty in faculties)
@@ -97,8 +97,8 @@ namespace StudentTracker.Data
             //Specialties
             var specialties = new Specialty[] 
             {
-                new Specialty{SpecialtyName="Прикладная математика и информатика", FacultyID=3},
-                new Specialty{SpecialtyName="Программная инженерия", FacultyID=3},
+                new Specialty{SpecialtyName="Прикладная математика и информатика", FacultyID=2},
+                new Specialty{SpecialtyName="Программная инженерия", FacultyID=2},
             };
 
             foreach(var specialty in specialties)
