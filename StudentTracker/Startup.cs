@@ -35,6 +35,7 @@ namespace StudentTracker
             {
                 options.AccessDeniedPath = new PathString("/Account/AccessDenied");
             });
+            
 
             services.AddControllersWithViews();
         }

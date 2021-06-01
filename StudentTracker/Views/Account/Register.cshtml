@@ -1,37 +1,77 @@
 ﻿@model StudentTracker.ViewModels.RegisterModel
 
-<h2>Регистрация</h2>
+@{
+    ViewData["Title"] = "Регистрация";
+}
 
-<form asp-action="Register" asp-controller="Account" asp-anti-forgery="true">
-    <div class="validation" asp-validation-summary="ModelOnly"></div>
-    <div>
-        <div>
-            <label asp-for="LastName">Введите Фамилию</label><br />
-            <input type="text" asp-for="LastName" />
-            <span asp-validation-for="LastName" />
+<style>
+    input {
+        background-color: #f6f7f9;
+        border: 1px solid;
+        border-radius: 5px;
+    }
+        input:focus {
+            background-color: #f6f7f9;
+        }
+    
+    .element {
+        margin: 10px;
+    }
+        .element label {
+            text-align: left;
+            float: left;
+            font-weight: bold;
+        }
+        .element input {
+            float: left;
+        }
+
+    .form {
+        width: auto;
+        box-shadow: 0 0 5px;
+        background-color: white;
+        display: inline-block;
+        padding: 20px 50px;
+        margin: 10px;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="text-center" style="padding-top: 30px;">
+    <h2>Регистрация</h2>
+    <form style="margin: auto;" class="form-signin" asp-action="Register" asp-controller="Account" asp-anti-forgery="true">
+        <div class="form">
+            <div class="validation" asp-validation-summary="ModelOnly"></div>
+            <div>
+                <div class="element">
+                    <label asp-for="LastName">Фамилия</label><br />
+                    <input type="text" asp-for="LastName" />
+                    <span asp-validation-for="LastName" />
+                </div>
+                <div class="element">
+                    <label asp-for="FirstName">Имя</label><br />
+                    <input type="text" asp-for="FirstName" />
+                    <span asp-validation-for="FirstName" />
+                </div>
+                <div class="element">
+                    <label asp-for="Email">Email</label><br />
+                    <input type="text" asp-for="Email" />
+                    <span asp-validation-for="Email" />
+                </div>
+                <div class="element">
+                    <label asp-for="Password">Пароль</label><br />
+                    <input asp-for="Password" />
+                    <span asp-validation-for="Password" />
+                </div>
+                <div class="element">
+                    <label asp-for="ConfirmPassword">Повторите пароль</label><br />
+                    <input asp-for="ConfirmPassword" />
+                    <span asp-validation-for="ConfirmPassword" />
+                </div>
+                <div>
+                    <input type="submit" style="margin: 20px;" class="btn btn-primary" value="Регистрация" />
+                </div>
+            </div>
         </div>
-        <div>
-            <label asp-for="FirstName">Введите имя</label><br />
-            <input type="text" asp-for="FirstName" />
-            <span asp-validation-for="FirstName" />
-        </div>
-        <div>
-            <label asp-for="Email">Введите Email</label><br />
-            <input type="text" asp-for="Email" />
-            <span asp-validation-for="Email" />
-        </div>
-        <div>
-            <label asp-for="Password">Введите пароль</label><br />
-            <input asp-for="Password" />
-            <span asp-validation-for="Password" />
-        </div>
-        <div>
-            <label asp-for="ConfirmPassword">Повторите пароль</label><br />
-            <input asp-for="ConfirmPassword" />
-            <span asp-validation-for="ConfirmPassword" />
-        </div>
-        <div>
-            <input type="submit" value="Регистрация" />
-        </div>
-    </div>
-</form>
+    </form>
+</div>
