@@ -4,6 +4,7 @@
     ViewData["Title"] = "Регистрация";
 }
 
+
 <style>
     input {
         background-color: #f6f7f9;
@@ -13,17 +14,21 @@
         input:focus {
             background-color: #f6f7f9;
         }
-    
+
     .element {
-        margin: 10px;
+        margin: 10px 0px;
+        width: 100%;
     }
         .element label {
             text-align: left;
             float: left;
             font-weight: bold;
+            font-size: 14px;
         }
         .element input {
+            width: 100%;
             float: left;
+            font-size: 14px;
         }
 
     .form {
@@ -69,7 +74,7 @@
                     <span asp-validation-for="ConfirmPassword" />
                 </div>
                 <div>
-                    <input type="submit" style="margin: 20px;" class="btn btn-primary" value="Регистрация" />
+                    <input type="submit" size="10" style="margin: 20px 0px; font-size: 14px; width: 100%; float: left;" class="btn-sm btn-success" value="Регистрация" />
                 </div>
             </div>
         </div>
