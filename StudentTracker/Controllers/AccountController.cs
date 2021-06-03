@@ -129,7 +129,7 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Role)
                 .First(s => s.Email == User.Identity.Name);
 
-            return View(user);
+            return  View(user);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -269,6 +269,58 @@ namespace StudentTracker.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (User.IsInRole("admin"))
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                return NotFound();
+            }
+            else
+            {
+                User user = await _context.Users.FirstAsync(u => u.Email == User.Identity.Name);
+
+                return View(user);
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (User.IsInRole("admin"))
+            {
+                var user = await _context.Users.FindAsync(id);
+
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Details));
+                }
+            }
+
+            if (_context.Users.First(u => u.Email == User.Identity.Name).UserId == id)
+            {
+                var user = await _context.Users.FindAsync(id);
+
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Logout));
+                }
+            }
+
+            return NotFound();
         }
     }
 }
