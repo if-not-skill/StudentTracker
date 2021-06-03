@@ -1,0 +1,37 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Информация аккаунта";
+}
+
+<style>
+    .title {
+        font-weight: bold;
+    }
+</style>
+
+<div style="background-color: white; padding: 20px;">
+    <h2>Информация аккаунта</h2>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-2 title">Фамилия:
+        <dt />
+        <dd class="col-sm-10">@Model.LastName</dd>
+
+        <dt class="col-sm-2 title">Имя:
+        <dt />
+        <dd class="col-sm-10">@Model.FirstName</dd>
+
+        <dt class="col-sm-2 title">email:
+        <dt />
+        <dd class="col-sm-10">@Model.Email</dd>
+    </dl>
+
+    <div class="btn-group">
+        <a class="btn btn-outline-success" asp-action="Edit">Изменить</a>
+        <a class="btn btn-outline-danger" asp-action="">Удалить</a>
+    </div>
+
+
+</div>

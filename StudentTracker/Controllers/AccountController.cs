@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using StudentTracker.Data;
 using StudentTracker.Models;
 using StudentTracker.ViewModels;
@@ -27,6 +31,7 @@ namespace StudentTracker.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
@@ -43,15 +48,19 @@ namespace StudentTracker.Controllers
 
                     return RedirectToAction("Index", "Students");
                 }
+
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
+
             return View(model);
         }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel model)
@@ -82,6 +91,7 @@ namespace StudentTracker.Controllers
                 else
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
+
             return View(model);
         }
 
@@ -95,7 +105,8 @@ namespace StudentTracker.Controllers
             };
 
             // создаем объект ClaimsIdentity
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
@@ -111,6 +122,80 @@ namespace StudentTracker.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Details()
+        {
+            User user = _context.Users
+                .Include(s => s.Role)
+                .First(s => s.Email == User.Identity.Name);
+
+            return View(user);
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                User user = _context.Users
+                    .Include(s => s.Role)
+                    .First(s => s.Email == User.Identity.Name);
+
+                ViewData["Roles"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
+
+                return View(user);
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,LastName,FirstName,Email")] User user)
+        {
+            if (_context.Users.First(u => u.Email == User.Identity.Name).UserId != user.UserId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    User currentUser = _context.Users.First(u => u.UserId == user.UserId);
+                    currentUser.FirstName = user.FirstName;
+                    currentUser.LastName = user.LastName;
+                    currentUser.Email = user.Email;
+
+                    _context.Update(currentUser);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.UserId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(Details));
+            }
+
+            ViewData["Roles"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
+            return View(user);
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.Users.Any(e => e.UserId == id);
         }
     }
 }
