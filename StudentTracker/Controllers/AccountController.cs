@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -6,11 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using StudentTracker.Data;
 using StudentTracker.Models;
 using StudentTracker.ViewModels;
@@ -154,7 +152,8 @@ namespace StudentTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,LastName,FirstName,Email")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,LastName,FirstName,Email")]
+            User user)
         {
             if (_context.Users.First(u => u.Email == User.Identity.Name).UserId != user.UserId)
             {
@@ -197,5 +196,80 @@ namespace StudentTracker.Controllers
         {
             return _context.Users.Any(e => e.UserId == id);
         }
+
+        public async Task<IActionResult> ChangePassword(int? id)
+        {
+            User user;
+
+
+            ChangePasswordModel changePasswordModel;
+            if (id == null)
+            {
+                user = _context.Users.First(u => u.Email == User.Identity.Name);
+
+                changePasswordModel = new ChangePasswordModel {Id = user.UserId, Email = user.Email};
+
+                return View(changePasswordModel);
+            }
+
+            user = _context.Users.First(u => u.UserId == id);
+
+            changePasswordModel = new ChangePasswordModel {Id = user.UserId, Email = user.Email};
+
+            return View(changePasswordModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _context.Users.FirstAsync(u => u.UserId == model.Id);
+                
+                if (user != null)
+                {
+                    if (user.Password != model.OldPassword)
+                    {
+                        ModelState.AddModelError(String.Empty,  "Старый пароль указан не верно");
+                    }
+                    else
+                    {
+
+                        if (model.NewPassword != model.ConfirmNewPassword)
+                        {
+                            ModelState.AddModelError(String.Empty, "Новый пароль не совпадает");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                user.Password = model.NewPassword;
+
+                                _context.Update(user);
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                if (!UserExists(user.UserId))
+                                {
+                                    return NotFound();
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+
+
+                            return RedirectToAction(nameof(Details));
+                        }
+                    }
+                }
+            }
+
+            return View(model);
+        }
     }
 }
+

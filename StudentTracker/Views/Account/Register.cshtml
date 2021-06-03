@@ -6,26 +6,20 @@
 
 
 <style>
-    input {
-        background-color: #f6f7f9;
-        border: 1px solid;
-        border-radius: 5px;
-    }
-        input:focus {
-            background-color: #f6f7f9;
-        }
 
     .element {
         margin: 10px 0px;
         width: 100%;
     }
+
         .element label {
             text-align: left;
             float: left;
             font-weight: bold;
             font-size: 14px;
         }
-        .element input {
+
+        .element div {
             width: 100%;
             float: left;
             font-size: 14px;
@@ -40,6 +34,21 @@
         margin: 10px;
         border-radius: 10px;
     }
+
+    .form-control  {
+        background-color: #f6f7f9;
+    }
+        .form-control:focus {
+            background-color: #f6f7f9;
+        }
+
+        .field-icon {
+            float: right;
+            margin-left: -25px;
+            margin-top: -25px;
+            position: relative;
+            z-index: 2;
+        }
 </style>
 
 <div class="text-center" style="padding-top: 30px;">
@@ -50,33 +59,57 @@
             <div>
                 <div class="element">
                     <label asp-for="LastName">Фамилия</label><br />
-                    <input type="text" asp-for="LastName" />
+                    <input type="text" asp-for="LastName" class="form-control"/>
                     <span asp-validation-for="LastName" />
                 </div>
                 <div class="element">
                     <label asp-for="FirstName">Имя</label><br />
-                    <input type="text" asp-for="FirstName" />
+                    <input type="text" asp-for="FirstName" class="form-control"/>
                     <span asp-validation-for="FirstName" />
                 </div>
                 <div class="element">
                     <label asp-for="Email">Email</label><br />
-                    <input type="text" asp-for="Email" />
+                    <input type="text" asp-for="Email" class="form-control"/>
                     <span asp-validation-for="Email" />
                 </div>
                 <div class="element">
                     <label asp-for="Password">Пароль</label><br />
-                    <input asp-for="Password" />
-                    <span asp-validation-for="Password" />
+                    <div>
+                        <input asp-for="Password" id="password-field" class="form-control"/>
+                        <span onclick="clickShowPassword(this, 'password-field')" class="fa fa-fw fa-eye field-icon toggle-password" asp-validation-for="Password" />
+                    </div>
                 </div>
-                <div class="element">
+                <div class="element" style="margin-top: 50px;">
                     <label asp-for="ConfirmPassword">Повторите пароль</label><br />
-                    <input asp-for="ConfirmPassword" />
-                    <span asp-validation-for="ConfirmPassword" />
+                    <div>
+                        <input asp-for="ConfirmPassword" id="confirm-password-field" class="form-control" />
+                        <span onclick="clickShowPassword(this, 'confirm-password-field')" class="fa fa-fw fa-eye field-icon toggle-password" asp-validation-for="ConfirmPassword" />
+                    </div>
                 </div>
                 <div>
-                    <input type="submit" size="10" style="margin: 20px 0px; font-size: 14px; width: 100%; float: left;" class="btn-sm btn-success" value="Регистрация" />
+                    <input type="submit" size="14" style="margin: 20px 0px; font-size: 14px; width: 100%; float: left;" class="btn-sm btn-success" value="Регистрация" />
                 </div>
             </div>
         </div>
     </form>
 </div>
+
+
+<script type="text/javascript">
+    function clickShowPassword(checkbox, id) {
+        var a = document.getElementById(id);
+
+
+        if (a.type == "password") {
+            checkbox.classList.toggle("fa-eye");
+            checkbox.classList.add("fa-eye-slash");
+
+            a.type = "text";
+        } else {
+            checkbox.classList.toggle("fa-eye-slash");
+            checkbox.classList.add("fa-eye");
+
+            a.type = "password";
+        }
+    }
+</script>
