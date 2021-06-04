@@ -1,0 +1,79 @@
+﻿@model Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<User, Role>
+
+@{
+    ViewData["Title"] = "Аккаунты";
+}
+
+
+<style>
+    table {
+        background-color: white;
+    }
+
+    thead {
+        margin-top: 30px;
+    }
+
+    tbody {
+        margin-bottom: 30px;
+    }
+
+    th, td {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+</style>
+
+
+<div align="center">
+    @if (Model.Count() > 1)
+    {
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    Фамилия
+                </th>
+                <th>
+                    Имя
+                </th>
+                <th>
+                    email
+                </th>
+                <th>
+                    Роль
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                if (user.Email != User.Identity.Name)
+                {
+                    <tr>
+                        <td>
+                            @user.LastName
+                        </td>
+                        <td>
+                            @user.FirstName
+                        </td>
+                        <td>
+                            @user.Email
+                        </td>
+                        <td>
+                            @user.Role.Name
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-outline-success"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@user.UserId"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    }
+</div>

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using StudentTracker.Data;
 using StudentTracker.Models;
 using StudentTracker.ViewModels;
@@ -280,7 +281,9 @@ namespace StudentTracker.Controllers
                     return NotFound();
                 }
 
-                return NotFound();
+                User user = await _context.Users.FirstAsync(u => u.UserId == id);
+
+                return View(user);
             }
             else
             {
@@ -303,7 +306,7 @@ namespace StudentTracker.Controllers
                     _context.Users.Remove(user);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction(nameof(Details));
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -321,6 +324,13 @@ namespace StudentTracker.Controllers
             }
 
             return NotFound();
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            IIncludableQueryable<User, Role> users = _context.Users.Include(u => u.Role);
+
+            return View(users);
         }
     }
 }
