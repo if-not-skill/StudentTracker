@@ -133,6 +133,24 @@ namespace StudentTracker.Controllers
             return  View(user);
         }
 
+        public async Task<IActionResult> AdminEdit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                User user = _context.Users
+                    .Include(s => s.Role)
+                    .First(s => s.UserId == id);
+
+                ViewData["Roles"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
+
+                return View(user);
+            }
+        }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -147,8 +165,38 @@ namespace StudentTracker.Controllers
             }
             else
             {
-                return View();
+                return NotFound();
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdminEdit(int id, [Bind("UserId,LastName,FirstName,Email,RoleId")] User user)
+        {
+            try
+            {
+                User currentUser = _context.Users.First(u => u.UserId == user.UserId);
+                currentUser.FirstName = user.FirstName;
+                currentUser.LastName = user.LastName;
+                currentUser.Email = user.Email;
+                currentUser.RoleId = user.RoleId;
+
+                _context.Update(currentUser);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(user.UserId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
