@@ -1,54 +1,54 @@
 ﻿@model StudentTracker.Models.StudentState
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Изменение информации трудоустройства";
 }
 
-<h1>Edit</h1>
 
-<h4>StudentState</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="StudentStateID" />
-            <div class="form-group">
-                <label asp-for="StudentID" class="control-label"></label>
-                <select asp-for="StudentID" class="form-control" asp-items="ViewBag.StudentID"></select>
-                <span asp-validation-for="StudentID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmploymentStatusID" class="control-label"></label>
-                <select asp-for="EmploymentStatusID" class="form-control" asp-items="ViewBag.EmploymentStatusID"></select>
-                <span asp-validation-for="EmploymentStatusID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StatusDate" class="control-label"></label>
-                <input asp-for="StatusDate" class="form-control" />
-                <span asp-validation-for="StatusDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CountryName" class="control-label"></label>
-                <input asp-for="CountryName" class="form-control" />
-                <span asp-validation-for="CountryName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CityName" class="control-label"></label>
-                <input asp-for="CityName" class="form-control" />
-                <span asp-validation-for="CityName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div style="background-color: white; padding: 20px;">
+    <h1>Изменение</h1>
+
+    <h4>Информация трудоуйстройства</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="StudentStateID" />
+                <select style="visibility: hidden;" asp-for="StudentID" class="form-control" asp-items="ViewBag.StudentID"></select>
+                <div class="form-group">
+                    <label asp-for="EmploymentStatusID" class="control-label">Статус трудоустройстсва</label>
+                    <select asp-for="EmploymentStatusID" class="form-control" asp-items="ViewBag.EmploymentStatusID"></select>
+                    <span asp-validation-for="EmploymentStatusID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StatusDate" class="control-label">Дата статуса</label>
+                    <input asp-for="StatusDate" class="form-control" />
+                    <span asp-validation-for="StatusDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CountryName" class="control-label">Страна</label>
+                    <input asp-for="CountryName" class="form-control" />
+                    <span asp-validation-for="CountryName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CityName" class="control-label">Город</label>
+                    <input asp-for="CityName" class="form-control" />
+                    <span asp-validation-for="CityName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Сохранить" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div>
+        <a asp-action="Details" asp-controller="Students" asp-route-id="@Model.StudentID">Назад</a>
+    </div>
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

@@ -1,51 +1,57 @@
 ﻿@model StudentTracker.Models.StudentState
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Удаление информации о трудоустройстве";
 }
 
-<h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>StudentState</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StatusDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StatusDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CountryName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CountryName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CityName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CityName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Student)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Student.EmailAddress)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EmploymentStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EmploymentStatus.EmploymentStatusID)
-        </dd class>
-    </dl>
+<div style="background-color: white; padding: 20px;">
+    <h1>Удаление</h1>
+
+    <h3>Вы действительно хотите удалить информацию о трудоустройстве?</h3>
+    <div>
+        <h4>StudentState</h4>
+        <hr />
+        <dl class="row">
+            <dt class = "col-sm-2">
+                Дата статуса: 
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.StatusDate)
+            </dd>
+            <dt class = "col-sm-2">
+                Страна трудоуйстройства: 
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.CountryName)
+            </dd>
+            <dt class = "col-sm-2">
+                Город трудоустройства: 
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.CityName)
+            </dd>
+            <dt class = "col-sm-2">
+                Студент: 
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Student.LastName)
+                @Html.DisplayFor(model => model.Student.FirstName)
+            </dd>
+            <dt class = "col-sm-2">
+                Статус трудоустройства
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.EmploymentStatus.Name)
+            </dd>
+        </dl>
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="StudentStateID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="StudentStateID" />
+            <div class="btn-group">
+                <a class="btn btn-outline-primary" asp-action="Details" asp-controller="Students" asp-route-id="@Model.StudentID">Назад</a>
+                <input type="submit" value="Удалить" class="btn btn-outline-danger"/>
+            </div>
+        </form>
+    </div>
 </div>

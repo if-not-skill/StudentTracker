@@ -91,8 +91,8 @@ namespace StudentTracker.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "EmploymentStatusID", studentState.EmploymentStatusID);
-            ViewData["StudentID"] = new SelectList(_context.Students, "StudentID", "EmailAddress", studentState.StudentID);
+            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "Name", studentState.EmploymentStatusID);
+            ViewData["StudentID"] = new SelectList(_context.Students, "StudentID", "LastName", studentState.StudentID);
             return View(studentState);
         }
 
@@ -126,7 +126,7 @@ namespace StudentTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Students", new{id = studentState.StudentID});
             }
             ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "EmploymentStatusID", studentState.EmploymentStatusID);
             ViewData["StudentID"] = new SelectList(_context.Students, "StudentID", "EmailAddress", studentState.StudentID);
@@ -161,7 +161,7 @@ namespace StudentTracker.Controllers
             var studentState = await _context.StudentStates.FindAsync(id);
             _context.StudentStates.Remove(studentState);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", "Students", new {id = id});
         }
 
         private bool StudentStateExists(int id)
