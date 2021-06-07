@@ -1,0 +1,51 @@
+﻿@model StudentState
+
+@{
+    ViewData["Title"] = "Обновление информации о трудоустройстве";
+}
+
+
+<div style="background-color: white; padding: 20px;">
+    <h4>Добавление информации о трудоустройстве</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="UpdateStudentStatus">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label class="control-label">Вы: </label>
+                    <label>
+                        @{
+                            var student = (ViewData["Student"] as Student);
+                            <text>@student.FirstName</text>
+                            <text>@student.MidName</text>
+                            <text>@student.LastName</text>
+                        }
+                    </label>
+                    <input type="hidden" asp-for="StudentID" value="@ViewData["StudentID"]" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Статус трудоустройства</label>
+                    <select asp-for="EmploymentStatusID" class="form-control" asp-items="ViewBag.EmploymentStatusID"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Страна в которой трудоустроен</label>
+                    <input asp-for="CountryName" class="form-control" />
+                    <span asp-validation-for="CountryName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Город в котором трудоустроен</label>
+                    <input asp-for="CityName" class="form-control" />
+                    <span asp-validation-for="CityName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Сохранить" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

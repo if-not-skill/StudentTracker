@@ -20,7 +20,7 @@ namespace StudentTracker.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Role adminRole = new Role {Id = 1, Name = "admin"};
+            Role adminRole = new Role {Id = 1, Name = "admin"}; 
             Role workerRole = new Role { Id = 2, Name = "worker" };
             Role userRole = new Role { Id = 3, Name = "user" };
 

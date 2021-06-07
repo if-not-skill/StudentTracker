@@ -1,28 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EmailService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 using StudentTracker.Data;
 using StudentTracker.Models;
 
 namespace StudentTracker.Controllers
 {
-    [Authorize(Roles="admin, worker")]
+    [Authorize(Roles = "admin, worker")]
     public class StudentsController : Controller
     {
         private readonly StudentTrackerContext _context;
+        private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public StudentsController(StudentTrackerContext context)
+        public StudentsController(StudentTrackerContext context, IEmailSender emailSender,
+            IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _emailSender = emailSender;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString,
+            int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["LastNameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
@@ -32,8 +42,10 @@ namespace StudentTracker.Controllers
             ViewData["EndDateSortParam"] = sortOrder == "end_date" ? "end_date_desc" : "end_date";
             ViewData["FacultySortParam"] = sortOrder == "faculty" ? "faculty_desc" : "faculty";
             ViewData["SpecialtySortParam"] = sortOrder == "specialty" ? "specialty_desc" : "specialty";
-            ViewData["AcademicDegreeSortParam"] = sortOrder == "academic_degree" ? "academic_degree_desc" : "academic_degree";
-            ViewData["FormEducationSortParam"] = sortOrder == "form_education" ? "form_education_desc" : "form_education";
+            ViewData["AcademicDegreeSortParam"] =
+                sortOrder == "academic_degree" ? "academic_degree_desc" : "academic_degree";
+            ViewData["FormEducationSortParam"] =
+                sortOrder == "form_education" ? "form_education_desc" : "form_education";
             ViewData["CurrentFilter"] = searchString ?? currentFilter;
 
             if (searchString != null)
@@ -56,14 +68,14 @@ namespace StudentTracker.Controllers
             {
                 students = (IOrderedQueryable<Student>) students.Where(
                     s => s.FirstName.Contains(searchString)
-                    || s.LastName.Contains(searchString)
-                    || s.MidName.Contains(searchString)
-                    || s.Gender.GenderName.Contains(searchString)
-                    || s.EndDate.Year.ToString().Contains(searchString)
-                    || s.Specialty.Faculty.FacultyShortName.Contains(searchString)
-                    || s.Specialty.SpecialtyName.Contains(searchString)
-                    || s.AcademicDegree.AcademicDegreeName.Contains(searchString)
-                    || s.FormEducation.FormEducationName.Contains(searchString));
+                         || s.LastName.Contains(searchString)
+                         || s.MidName.Contains(searchString)
+                         || s.Gender.GenderName.Contains(searchString)
+                         || s.EndDate.Year.ToString().Contains(searchString)
+                         || s.Specialty.Faculty.FacultyShortName.Contains(searchString)
+                         || s.Specialty.SpecialtyName.Contains(searchString)
+                         || s.AcademicDegree.AcademicDegreeName.Contains(searchString)
+                         || s.FormEducation.FormEducationName.Contains(searchString));
             }
 
             switch (sortOrder)
@@ -125,8 +137,141 @@ namespace StudentTracker.Controllers
             }
 
             int pageSize = 3;
-            
+
             return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        public async Task<IActionResult> AllSendMessage(string sortOrder, string currentFilter,
+           string searchString, int? pageNumber)
+        {
+
+            var pathToFile = _hostEnvironment.WebRootPath
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "templates"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "EmailTemplate"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "UpdateStudentStatus.html";
+
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = System.IO.File.OpenText(pathToFile))
+            {
+                builder.HtmlBody = await SourceReader.ReadToEndAsync();
+            }
+
+            var students = _context.Students
+                .Include(s => s.AcademicDegree)
+                .Include(s => s.FormEducation)
+                .Include(s => s.Gender)
+                .Include(s => s.Specialty)
+                .Include(s => s.StudentStates)
+                .Include(s => s.Specialty.Faculty).OrderBy(s => s.LastName);
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                students = (IOrderedQueryable<Student>)students.Where(
+                    s => s.FirstName.Contains(searchString)
+                         || s.LastName.Contains(searchString)
+                         || s.MidName.Contains(searchString)
+                         || s.Gender.GenderName.Contains(searchString)
+                         || s.EndDate.Year.ToString().Contains(searchString)
+                         || s.Specialty.Faculty.FacultyShortName.Contains(searchString)
+                         || s.Specialty.SpecialtyName.Contains(searchString)
+                         || s.AcademicDegree.AcademicDegreeName.Contains(searchString)
+                         || s.FormEducation.FormEducationName.Contains(searchString));
+            }
+
+            var Now = DateTime.Now;
+
+            foreach (var student in students)
+            {
+                if (!student.StudentStates.Any() || GetLastStatesDate(student).AddMonths(1) < Now)
+                {
+                    var updateLink = this.Url.Action("UpdateStudentStatus", "Students",
+                        new {id = student.StudentID, firstName = student.FirstName, lastName = student.LastName},
+                        Url.ActionContext.HttpContext.Request.Scheme);
+
+                    var messageContent = builder.HtmlBody;
+                    messageContent = messageContent.Replace("UpdateLink", updateLink);
+                    messageContent = messageContent.Replace("LastName", student.LastName);
+                    messageContent = messageContent.Replace("FirstName", student.FirstName);
+
+                    var message = new Message(new string[] {student.EmailAddress},
+                        "Обновление информации о трудоустройстве",
+                        messageContent);
+                    await _emailSender.SendEmailAsync(message);
+                }
+            }
+
+            return RedirectToAction("Index",
+                new
+                {
+                    sortOrder = sortOrder,
+                    currentFilter = currentFilter,
+                    searchString = searchString,
+                    pageNumber = pageNumber
+                });
+        }
+
+        private DateTime GetLastStatesDate(Student student)
+        {
+            DateTime dateTime = new DateTime();
+
+            foreach (var studentState in student.StudentStates)
+            {
+                if (dateTime < studentState.StatusDate)
+                {
+                    dateTime = studentState.StatusDate;
+                }
+            }
+
+            return dateTime;
+        }
+
+        public async Task<IActionResult> SendMessage(int? id, string sortOrder, string currentFilter,
+            string searchString, int? pageNumber)
+        {
+            if (id == null) return NotFound();
+
+            var student = _context.Students.First(s => s.StudentID == id);
+
+            var pathToFile = _hostEnvironment.WebRootPath
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "templates"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "EmailTemplate"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "UpdateStudentStatus.html";
+
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = System.IO.File.OpenText(pathToFile))
+            {
+                builder.HtmlBody = SourceReader.ReadToEnd();
+            }
+
+            var updateLink = this.Url.Action("UpdateStudentStatus", "Students",
+                new {id = student.StudentID, firstName = student.FirstName, lastName = student.LastName},
+                Url.ActionContext.HttpContext.Request.Scheme);
+
+            var messageContent = builder.HtmlBody;
+            messageContent = messageContent.Replace("UpdateLink", updateLink);
+            messageContent = messageContent.Replace("LastName", student.LastName);
+            messageContent = messageContent.Replace("FirstName", student.FirstName);
+
+            var message = new Message(new string[] {student.EmailAddress}, "Обновление информации о трудоустройстве",
+                messageContent);
+            await _emailSender.SendEmailAsync(message);
+
+            return RedirectToAction("Index",
+                new
+                {
+                    sortOrder = sortOrder,
+                    currentFilter = currentFilter,
+                    searchString = searchString,
+                    pageNumber = pageNumber
+                });
         }
 
         // GET: Students/Details/5
@@ -162,14 +307,17 @@ namespace StudentTracker.Controllers
         // GET: Students/Create
         public IActionResult Create()
         {
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName");
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName");
+            ViewData["AcademicDegreeID"] =
+                new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName");
+            ViewData["FormEducationID"] =
+                new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName");
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderName");
 
             int selectedIndex = 1;
             SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", selectedIndex);
             ViewData["Faculties"] = faculties;
-            SelectList specialties = new SelectList(_context.Specialties.Where(c => c.FacultyID == selectedIndex), "SpecialtyID", "SpecialtyName");
+            SelectList specialties = new SelectList(_context.Specialties.Where(c => c.FacultyID == selectedIndex),
+                "SpecialtyID", "SpecialtyName");
             ViewData["SpecialtyID"] = specialties;
 
             return View();
@@ -185,7 +333,10 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,Faculty,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")] Student student)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,Faculty,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")]
+            Student student)
         {
             if (ModelState.IsValid)
             {
@@ -193,10 +344,14 @@ namespace StudentTracker.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeID", student.AcademicDegreeID);
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName", student.FormEducationID);
+
+            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID",
+                "AcademicDegreeID", student.AcademicDegreeID);
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID",
+                "FormEducationName", student.FormEducationID);
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderID", student.GenderID);
-            ViewData["SpecialtyID"] = new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
+            ViewData["SpecialtyID"] =
+                new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
             return View(student);
         }
 
@@ -212,26 +367,31 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Specialty)
                 .Include(s => s.Specialty.Faculty)
                 .FirstOrDefaultAsync(s => s.StudentID == id.Value);
-            
+
             if (student == null)
             {
                 return NotFound();
             }
-            
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeName", student.AcademicDegreeID);
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationName", student.FormEducationID);
+
+            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID",
+                "AcademicDegreeName", student.AcademicDegreeID);
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID",
+                "FormEducationName", student.FormEducationID);
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderName", student.GenderID);
 
             if (student.Specialty != null)
             {
-                SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName", student.Specialty.FacultyID);
+                SelectList faculties = new SelectList(_context.Faculties, "FacultyID", "FacultyName",
+                    student.Specialty.FacultyID);
                 ViewData["Faculties"] = faculties;
             }
 
-            SelectList specialties = new SelectList(_context.Specialties.Where(s => s.FacultyID == student.Specialty.FacultyID), "SpecialtyID", "SpecialtyName", student.SpecialtyID);
+            SelectList specialties =
+                new SelectList(_context.Specialties.Where(s => s.FacultyID == student.Specialty.FacultyID),
+                    "SpecialtyID", "SpecialtyName", student.SpecialtyID);
             ViewData["Specialties"] = specialties;
 
-            
+
             return View(student);
         }
 
@@ -240,7 +400,10 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")] Student student)
+        public async Task<IActionResult> Edit(int id,
+            [Bind(
+                "StudentID,LastName,FirstName,MidName,GenderID,PhoneNumber,EmailAddress,SpecialtyID,FormEducationID,AcademicDegreeID,IsHasRedDiploma,EndDate")]
+            Student student)
         {
             if (id != student.StudentID)
             {
@@ -265,12 +428,17 @@ namespace StudentTracker.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID", "AcademicDegreeID", student.AcademicDegreeID);
-            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationID", student.FormEducationID);
+
+            ViewData["AcademicDegreeID"] = new SelectList(_context.AcademicDegrees, "AcademicDegreeID",
+                "AcademicDegreeID", student.AcademicDegreeID);
+            ViewData["FormEducationID"] = new SelectList(_context.FormsEducation, "FormEducationID", "FormEducationID",
+                student.FormEducationID);
             ViewData["GenderID"] = new SelectList(_context.Genders, "GenderID", "GenderID", student.GenderID);
-            ViewData["SpecialtyID"] = new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
+            ViewData["SpecialtyID"] =
+                new SelectList(_context.Specialties, "SpecialtyID", "SpecialtyID", student.SpecialtyID);
             return View(student);
         }
 
@@ -310,6 +478,60 @@ namespace StudentTracker.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.StudentID == id);
+        }
+
+        [AllowAnonymous]
+        public IActionResult UpdateStudentStatus(int? id, string firstName, string lastName)
+        {
+            if (id == null || firstName == null || lastName == null)
+            {
+                return NotFound();
+            }
+
+            var student = _context.Students.First(s => s.StudentID == id);
+
+
+
+            if (student == null || student.FirstName != firstName || student.LastName != lastName)
+            {
+                return NotFound();
+            }
+
+            ViewData["StudentID"] = id;
+            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID", "Name");
+            ViewData["Student"] = student;
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateStudentStatus(
+            [Bind("StudentStateID,StudentID,EmploymentStatusID,CountryName,CityName")]
+            StudentState studentState)
+        {
+            if (ModelState.IsValid)
+            {
+                studentState.StatusDate = DateTime.Now;
+
+                _context.Add(studentState);
+                await _context.SaveChangesAsync();
+                
+                return RedirectToAction(nameof(EndUpdate));
+            }
+
+            ViewData["EmploymentStatusID"] = new SelectList(_context.EmploymentStatuses, "EmploymentStatusID",
+                "EmploymentStatusID", studentState.EmploymentStatusID);
+            ViewData["StudentID"] =
+                new SelectList(_context.Students, "StudentID", "EmailAddress", studentState.StudentID);
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult EndUpdate()
+        {
+            return View();
         }
     }
 }

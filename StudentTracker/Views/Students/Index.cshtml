@@ -95,47 +95,53 @@
                     </a>
                 </th>
                 <th></th>
+                <th>
+                    <a class="btn btn-outline-primary" asp-action="AllSendMessage" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-pageNumber="@Model.PageIndex"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.MidName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Gender.GenderName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDate.Year)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Specialty.Faculty.FacultyShortName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Specialty.SpecialtyName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AcademicDegree.AcademicDegreeName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FormEducation.FormEducationName)
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.StudentID"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                            <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.StudentID"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
-                            <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.StudentID"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                        </div>
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MidName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Gender.GenderName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Specialty.Faculty.FacultyShortName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Specialty.SpecialtyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AcademicDegree.AcademicDegreeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FormEducation.FormEducationName)
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.StudentID"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.StudentID"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.StudentID"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-outline-primary" asp-action="SendMessage" asp-route-id="@item.StudentID" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" asp-route-pageNumber="@Model.PageIndex"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
