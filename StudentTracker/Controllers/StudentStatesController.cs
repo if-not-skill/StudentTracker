@@ -161,7 +161,7 @@ namespace StudentTracker.Controllers
             var studentState = await _context.StudentStates.FindAsync(id);
             _context.StudentStates.Remove(studentState);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Students", new {id = id});
+            return RedirectToAction("Details", "Students", new {id = studentState.StudentID});
         }
 
         private bool StudentStateExists(int id)

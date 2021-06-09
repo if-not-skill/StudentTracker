@@ -64,18 +64,24 @@ namespace StudentTracker.Controllers
                 .Include(s => s.Specialty)
                 .Include(s => s.Specialty.Faculty).OrderBy(s => s.LastName);
 
+
             if (!String.IsNullOrEmpty(searchString))
             {
-                students = (IOrderedQueryable<Student>) students.Where(
-                    s => s.FirstName.Contains(searchString)
-                         || s.LastName.Contains(searchString)
-                         || s.MidName.Contains(searchString)
-                         || s.Gender.GenderName.Contains(searchString)
-                         || s.EndDate.Year.ToString().Contains(searchString)
-                         || s.Specialty.Faculty.FacultyShortName.Contains(searchString)
-                         || s.Specialty.SpecialtyName.Contains(searchString)
-                         || s.AcademicDegree.AcademicDegreeName.Contains(searchString)
-                         || s.FormEducation.FormEducationName.Contains(searchString));
+                var searchWords = searchString.ToLower().Split(' ');
+
+                foreach (var searchWord in searchWords)
+                {
+                    students = (IOrderedQueryable<Student>) students.Where(
+                        s => s.FirstName.Contains(searchWord)
+                             || s.LastName.Contains(searchWord)
+                             || s.MidName.Contains(searchWord)
+                             || s.Gender.GenderName.Contains(searchWord)
+                             || s.EndDate.Year.ToString().Contains(searchWord)
+                             || s.Specialty.Faculty.FacultyShortName.Contains(searchWord)
+                             || s.Specialty.SpecialtyName.Contains(searchWord)
+                             || s.AcademicDegree.AcademicDegreeName.Contains(searchWord)
+                             || s.FormEducation.FormEducationName.Contains(searchWord));
+                }
             }
 
             switch (sortOrder)
@@ -144,6 +150,7 @@ namespace StudentTracker.Controllers
         public async Task<IActionResult> AllSendMessage(string sortOrder, string currentFilter,
            string searchString, int? pageNumber)
         {
+            searchString ??= currentFilter;
 
             var pathToFile = _hostEnvironment.WebRootPath
                              + Path.DirectorySeparatorChar.ToString()
@@ -165,21 +172,27 @@ namespace StudentTracker.Controllers
                 .Include(s => s.FormEducation)
                 .Include(s => s.Gender)
                 .Include(s => s.Specialty)
+                .Include(s => s.Specialty.Faculty)
                 .Include(s => s.StudentStates)
-                .Include(s => s.Specialty.Faculty).OrderBy(s => s.LastName);
+                .OrderBy(s => s.LastName);
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                students = (IOrderedQueryable<Student>)students.Where(
-                    s => s.FirstName.Contains(searchString)
-                         || s.LastName.Contains(searchString)
-                         || s.MidName.Contains(searchString)
-                         || s.Gender.GenderName.Contains(searchString)
-                         || s.EndDate.Year.ToString().Contains(searchString)
-                         || s.Specialty.Faculty.FacultyShortName.Contains(searchString)
-                         || s.Specialty.SpecialtyName.Contains(searchString)
-                         || s.AcademicDegree.AcademicDegreeName.Contains(searchString)
-                         || s.FormEducation.FormEducationName.Contains(searchString));
+                var searchWords = searchString.ToLower().Split(' ');
+
+                foreach (var searchWord in searchWords)
+                {
+                    students = (IOrderedQueryable<Student>)students.Where(
+                        s => s.FirstName.Contains(searchWord)
+                             || s.LastName.Contains(searchWord)
+                             || s.MidName.Contains(searchWord)
+                             || s.Gender.GenderName.Contains(searchWord)
+                             || s.EndDate.Year.ToString().Contains(searchWord)
+                             || s.Specialty.Faculty.FacultyShortName.Contains(searchWord)
+                             || s.Specialty.SpecialtyName.Contains(searchWord)
+                             || s.AcademicDegree.AcademicDegreeName.Contains(searchWord)
+                             || s.FormEducation.FormEducationName.Contains(searchWord));
+                }
             }
 
             var Now = DateTime.Now;
