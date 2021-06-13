@@ -22,6 +22,8 @@ namespace StudentTracker.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IWebHostEnvironment _hostEnvironment;
 
+        public StudentsController(){}
+
         public StudentsController(StudentTrackerContext context, IEmailSender emailSender,
             IWebHostEnvironment hostEnvironment)
         {
@@ -227,7 +229,7 @@ namespace StudentTracker.Controllers
                 });
         }
 
-        private DateTime GetLastStatesDate(Student student)
+        public DateTime GetLastStatesDate(Student student)
         {
             DateTime dateTime = new DateTime();
 
