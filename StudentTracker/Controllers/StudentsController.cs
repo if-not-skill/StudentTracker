@@ -22,7 +22,7 @@ namespace StudentTracker.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public StudentsController(){}
+        //public StudentsController(){}
 
         public StudentsController(StudentTrackerContext context, IEmailSender emailSender,
             IWebHostEnvironment hostEnvironment)
@@ -154,13 +154,7 @@ namespace StudentTracker.Controllers
         {
             searchString ??= currentFilter;
 
-            var pathToFile = _hostEnvironment.WebRootPath
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "templates"
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "EmailTemplate"
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "UpdateStudentStatus.html";
+            var pathToFile = _hostEnvironment.WebRootPath + GetPathToFile();
 
             var builder = new BodyBuilder();
 
@@ -251,13 +245,7 @@ namespace StudentTracker.Controllers
 
             var student = _context.Students.First(s => s.StudentID == id);
 
-            var pathToFile = _hostEnvironment.WebRootPath
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "templates"
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "EmailTemplate"
-                             + Path.DirectorySeparatorChar.ToString()
-                             + "UpdateStudentStatus.html";
+            var pathToFile = _hostEnvironment.WebRootPath + GetPathToFile();
 
             var builder = new BodyBuilder();
 
@@ -287,6 +275,16 @@ namespace StudentTracker.Controllers
                     searchString = searchString,
                     pageNumber = pageNumber
                 });
+        }
+
+        public string GetPathToFile()
+        {
+            return Path.DirectorySeparatorChar.ToString()
+                             + "templates"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "EmailTemplate"
+                             + Path.DirectorySeparatorChar.ToString()
+                             + "UpdateStudentStatus.html";
         }
 
         // GET: Students/Details/5
