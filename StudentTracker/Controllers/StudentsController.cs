@@ -521,7 +521,7 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
         public async Task<IActionResult> UpdateStudentStatus(
-            [Bind("StudentStateID,StudentID,EmploymentStatusID,CountryName,CityName")]
+            [Bind("StudentStateID,StudentID,EmploymentStatusID,CountryName,CityName,OrganizationName,PostName")]
             StudentState studentState)
         {
             if (ModelState.IsValid)

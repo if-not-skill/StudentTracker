@@ -157,6 +157,8 @@
                                     <th>Состояние трудоустройства</th>
                                     <th>Страна</th>
                                     <th>Город</th>
+                                    <th>Организация</th>
+                                    <th>Должность</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -168,6 +170,8 @@
                                     <td>@studentState.EmploymentStatus.Name</td>
                                     <td>@studentState.CountryName</td>
                                     <td>@studentState.CityName</td>
+                                    <td>@studentState.OrganizationName</td>
+                                    <td>@studentState.PostName</td>
                                     <td style="text-align: right;">
                                         <div class="btn-group">
                                             <a class="btn btn-outline-success" asp-controller="StudentStates" asp-action="Edit" asp-route-id="@studentState.StudentStateID"><i class="fa fa-pencil" aria-hidden="true"></i></a>

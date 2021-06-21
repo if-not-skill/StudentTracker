@@ -13,35 +13,47 @@
         <h4>StudentState</h4>
         <hr />
         <dl class="row">
-            <dt class = "col-sm-2">
-                Дата статуса: 
+            <dt class="col-sm-2">
+                Дата статуса:
             </dt>
-            <dd class = "col-sm-10">
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.StatusDate)
             </dd>
-            <dt class = "col-sm-2">
-                Страна трудоуйстройства: 
+            <dt class="col-sm-2">
+                Страна трудоуйстройства:
             </dt>
-            <dd class = "col-sm-10">
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.CountryName)
             </dd>
-            <dt class = "col-sm-2">
-                Город трудоустройства: 
+            <dt class="col-sm-2">
+                Город трудоустройства:
             </dt>
-            <dd class = "col-sm-10">
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.CityName)
             </dd>
-            <dt class = "col-sm-2">
-                Студент: 
+            <dt class="col-sm-2">
+                Наименование организации:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.OrganizationName)
+            </dd>
+            <dt class="col-sm-2">
+                Должность:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PostName)
+            </dd>
+            <dt class="col-sm-2">
+                Студент:
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Student.LastName)
                 @Html.DisplayFor(model => model.Student.FirstName)
             </dd>
-            <dt class = "col-sm-2">
+            <dt class="col-sm-2">
                 Статус трудоустройства
             </dt>
-            <dd class = "col-sm-10">
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.EmploymentStatus.Name)
             </dd>
         </dl>

@@ -12,6 +12,8 @@ namespace StudentTracker.Models
         public DateTime StatusDate { get; set; }
         public string CountryName { get; set; }
         public string CityName { get; set; }
+        public string OrganizationName { get; set; }
+        public string PostName { get; set; }
 
         //navigation properties
         public Student Student { get; set; }

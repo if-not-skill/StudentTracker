@@ -65,7 +65,7 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StudentStateID,StudentID,EmploymentStatusID,StatusDate,CountryName,CityName")] StudentState studentState)
+        public async Task<IActionResult> Create([Bind("StudentStateID,StudentID,EmploymentStatusID,StatusDate,CountryName,CityName,OrganizationName,PostName")] StudentState studentState)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +101,7 @@ namespace StudentTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StudentStateID,StudentID,EmploymentStatusID,StatusDate,CountryName,CityName")] StudentState studentState)
+        public async Task<IActionResult> Edit(int id, [Bind("StudentStateID,StudentID,EmploymentStatusID,StatusDate,CountryName,CityName,OrganizationName,PostName")] StudentState studentState)
         {
             if (id != studentState.StudentStateID)
             {

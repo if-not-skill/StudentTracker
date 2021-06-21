@@ -37,6 +37,16 @@
                     <span asp-validation-for="CityName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="OrganizationName" class="control-label">Наименование организации</label>
+                    <input asp-for="OrganizationName" class="form-control" />
+                    <span asp-validation-for="OrganizationName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PostName" class="control-label">Пост</label>
+                    <input asp-for="PostName" class="form-control" />
+                    <span asp-validation-for="PostName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <input type="submit" value="Сохранить" class="btn btn-primary" />
                 </div>
             </form>
