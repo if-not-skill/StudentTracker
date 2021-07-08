@@ -1,0 +1,8 @@
+﻿@model IEnumerable<StudentTracker.Models.Specialty>
+<select id="specialty" name="specialty" class="form-control">
+    <option value="0">Все</option>
+     @foreach (var item in Model)
+     {
+         <option value="@item.SpecialtyID">@item.SpecialtyName</option>
+     }
+</select>

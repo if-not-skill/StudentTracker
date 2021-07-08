@@ -19,40 +19,87 @@ namespace StudentTracker.Controllers
         }
 
         // GET: Reports
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int faculty = 0, int specialty = 0, int formEducation = 0, int academicDegree = 0, int sex = 0, int endYear = 0)
         {
-            var studentTrackerContext = _context.Students.Include(s => s.AcademicDegree).Include(s => s.FormEducation).Include(s => s.Gender).Include(s => s.Specialty);
-            
+            ViewData["FacultyId"] = faculty;
+            ViewData["SpecialtyId"] = specialty;
+            ViewData["FormEducationId"] = formEducation;
+            ViewData["AcademicDegreeId"] = academicDegree;
+            ViewData["Sex"] = sex;
+            ViewData["EndYear"] = endYear;
+
+            var students = _context.Students
+                .Include(s => s.AcademicDegree)
+                .Include(s => s.FormEducation)
+                .Include(s => s.Gender)
+                .Include(s => s.Specialty)
+                .Include(s => s.StudentStates)
+                .AsQueryable();
+
+            if (faculty != 0)
             {
-                var pieChartMain = new PieChart();
+                students = students.Where(s => s.Specialty.FacultyID == faculty);
 
-                foreach (var employmentStatus in _context.EmploymentStatuses)
+                if (specialty != 0)
                 {
-                    pieChartMain.labels.Add(employmentStatus.Name);
+                    students = students.Where(s => s.SpecialtyID == specialty);              
                 }
-                pieChartMain.labels.Add("неизвестно");
-                
-                pieChartMain.datasets[0].backgroundColor.Add("#2ecc71"); 
-                pieChartMain.datasets[0].backgroundColor.Add("#3498db");
-                pieChartMain.datasets[0].backgroundColor.Add("#95a5a6");
-                pieChartMain.datasets[0].backgroundColor.Add("#c9cbcf");
-                pieChartMain.datasets[0].backgroundColor.Add("#3498db");
-                pieChartMain.datasets[0].backgroundColor.Add("#95a5a6");
-
-                List<int> employmentValues = GetEmploymentValues();
-
-                foreach (var employmentValue in employmentValues)
-                {
-                    pieChartMain.datasets[0].data.Add(employmentValue);
-                }
-
-                ViewData["PieChartMain"] = pieChartMain;
             }
 
-            return View(await studentTrackerContext.ToListAsync());
+            if(formEducation != 0)
+            {
+                students = students.Where(s => s.FormEducationID == formEducation);
+            }
+
+            if (academicDegree != 0)
+            {
+                students = students.Where(s => s.AcademicDegreeID == academicDegree);
+            }
+
+            if(sex != 0)
+            {
+                students = students.Where(s => s.GenderID == sex);
+            }
+
+            if(endYear != 0)
+            {
+                students = students.Where(s => s.EndDate.Year == endYear);
+            }
+
+            var pieChartMain = new PieChart();
+
+            foreach (var employmentStatus in _context.EmploymentStatuses)
+            {
+                pieChartMain.labels.Add(employmentStatus.Name);
+            }
+            pieChartMain.labels.Add("неизвестно");
+
+            pieChartMain.datasets[0].backgroundColor.Add("#2ecc71");
+            pieChartMain.datasets[0].backgroundColor.Add("#3498db");
+            pieChartMain.datasets[0].backgroundColor.Add("#95a5a6");
+            pieChartMain.datasets[0].backgroundColor.Add("#c9cbcf");
+            pieChartMain.datasets[0].backgroundColor.Add("#3498db");
+            pieChartMain.datasets[0].backgroundColor.Add("#95a5a6");
+
+            List<int> employmentValues = GetEmploymentValues(students);
+
+            foreach (var employmentValue in employmentValues)
+            {
+                pieChartMain.datasets[0].data.Add(employmentValue);
+            }
+
+            ViewData["PieChartMain"] = pieChartMain;
+
+            ViewData["Specialties"] = _context.Specialties.Where(s => s.FacultyID == faculty).ToList();
+            ViewData["Faculties"] = _context.Faculties.ToList();
+            ViewData["FormsEducation"] = _context.FormsEducation.ToList();
+            ViewData["AcademicDegrees"] = _context.AcademicDegrees.ToList();
+            ViewData["Sexes"] = _context.Genders.ToList();
+
+            return View(await students.ToListAsync());
         }
 
-        private List<int> GetEmploymentValues()
+        private List<int> GetEmploymentValues(IQueryable<Student> students)
         {
             List<int> employmentValues = new List<int>();
 
@@ -63,8 +110,6 @@ namespace StudentTracker.Controllers
             {
                 employmentValues.Add(0);
             }
-
-            var students = _context.Students.Include(s => s.StudentStates);
             
             foreach (var student in students)
             {
@@ -236,6 +281,12 @@ namespace StudentTracker.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.StudentID == id);
+        }
+
+        public ActionResult GetItems(int id)
+        {
+            var faculties = _context.Specialties.Where(s => s.FacultyID == id);
+            return PartialView(faculties);
         }
     }
 }

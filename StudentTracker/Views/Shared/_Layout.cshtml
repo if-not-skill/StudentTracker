@@ -9,6 +9,7 @@
     <title>@ViewData["Title"] - StudentTracker</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body style="background-color: #f6f7f9">
@@ -20,7 +21,7 @@
                 <nav class="nav nav-masthead justify-content-center">
                     <a class="p-2 text-dark" asp-area="" asp-controller="Students" asp-action="Index">Студенты</a>
                     <a class="p-2 text-dark" asp-area="" asp-controller="Faculties" asp-action="Index">Факультеты</a>
-                    <a class="p-2 text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Отчеты</a>
+                    <a class="p-2 text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Мониторинг</a>
                 </nav>
             </div>
 
@@ -40,13 +41,13 @@
                 }
                 else
                 {
-        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @{
-                var user = _context.Users.First(s => s.Email == User.Identity.Name);
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @{
+                            var user = _context.Users.First(s => s.Email == User.Identity.Name);
 
-                <text>@user.FirstName @user.LastName</text>
-            }
-        </button>
+                            <text>@user.FirstName @user.LastName</text>
+                        }
+                    </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" asp-controller="Account" asp-action="Details">Аккаунт</a>
                         @* <a class="dropdown-item" href="#"></a> *@

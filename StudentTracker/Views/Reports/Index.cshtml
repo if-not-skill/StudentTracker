@@ -6,18 +6,118 @@
     ViewData["Title"] = "Index";
 }
 
-<div style="text-align: center;">
+<style>
+    form {
+        float: left;
+        width: 450px;
+        height: auto;
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        padding: 5px;
+    }
+
+    select {
+        margin-top: 1px;
+        margin-bottom: 1px;
+    }
+
+    .group {
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
+    .btn {
+        margin-top: 3px;
+        margin-bottom: 15px;
+    }
+
+</style>
+
+<div style="text-align: center; float: left;">
     <div style="text-align: center;">
-        <div style="width: 400px; height: 400px;">
-            <canvas id="myPieChart"></canvas>
+        <div>
+            <form asp-action="Index" method="get">
+                <p>Фильтры</p>
+                <hr>
+                <div class="group">
+                    <label>Факультет</label>
+                    <select id="faculty" class="form-control" name="Faculty">
+                        <option value="0" selected>Все</option>
+                        @foreach (var faculty in ViewData["Faculties"] as List<Faculty>)
+                        {
+                            @: <option @(faculty.FacultyID == (int)ViewData["FacultyId"] ? "selected" : "") value="@faculty.FacultyID">@faculty.FacultyName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Специальность</label>
+                    @{
+                        <select id="specialty" name="specialty" @(0 == (int)ViewData["FacultyId"] ? "disabled" : "") class="form-control">
+                            <option value="0" selected>Все</option>
+                            @foreach (var specialty in ViewData["Specialties"] as List<Specialty>)
+                            {
+                                @: <option @(specialty.SpecialtyID == (int)ViewData["SpecialtyId"] ? "selected" : "") value="@specialty.SpecialtyID">@specialty.SpecialtyName</option>
+                            }
+                        </select>
+                    }
+                </div>
+
+                <div class="group">
+                    <label>Форма образования</label>
+                    <select class="form-control" name="formEducation">
+                        <option value="0" selected>Все</option>
+                        @foreach (var formEducation in ViewData["FormsEducation"] as List<FormEducation>)
+                        {
+                            @: <option @(formEducation.FormEducationID == (int)ViewData["FormEducationId"] ? "selected" : "") value="@formEducation.FormEducationID">@formEducation.FormEducationName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Степень образования</label>
+                    <select class="form-control" name="academicDegree">
+                        <option value="0" selected>Все</option>
+                        @foreach (var academicDegree in ViewData["AcademicDegrees"] as List<AcademicDegree>)
+                        {
+                            @: <option @(academicDegree.AcademicDegreeID == (int)ViewData["AcademicDegreeId"] ? "selected" : "") value="@academicDegree.AcademicDegreeID">@academicDegree.AcademicDegreeName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Пол</label>
+                    <select class="form-control" name="sex">
+                        <option value="0" selected>Все</option>
+                        @foreach (var gender in ViewData["Sexes"] as List<Gender>)
+                        {
+                            @: <option @(gender.GenderID == (int)ViewData["Sex"] ? "selected" : "") value="@gender.GenderID">@gender.GenderName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Год окончания</label>
+                    <div>
+                        <input class="form-control" type="number" name="endYear" value="@((int)ViewData["EndYear"])">
+                    </div>
+                </div>
+
+                <hr>
+                <input class="btn btn-outline-primary" type="submit" value="ПРИМЕНИТЬ" />
+            </form>
+                <div style="width: 500px; height: 500px; float: right;">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts
+    @section Scripts
 {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="text/javascript">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="text/javascript">
         $(function() {
             var ctx = document.getElementById("myPieChart").getContext('2d');
 
@@ -47,5 +147,28 @@
                 });
         });
 
-    </script>
-}
+        $(function() {
+            $('#faculty').change(function() {
+                var id = $(this).val();
+                specialty = document.getElementById('specialty')
+                if (id == 0) {
+                    specialty.disabled = true
+                    specialty.selectedIndex = 0
+                }
+                else {
+                    specialty.disabled = false
+                    $.ajax
+                    ({
+                        type: 'GET',
+                        url: '@Url.Action("GetItems")/' + id,
+                        success: function(data) {
+                            $('#specialty').replaceWith(data);
+                        }
+                    });
+                }
+
+            });
+        })
+
+        </script>
+    }
